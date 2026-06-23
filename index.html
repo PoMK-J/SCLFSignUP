@@ -180,7 +180,7 @@
   }
 
   /* Scroll-scrubbed hero */
-  .scrub-spacer { height: 350vh; position: relative; }
+  .scrub-spacer { height: 220vh; position: relative; }
   .scrub-sticky { position: sticky; top: 0; height: 100vh; width: 100%; overflow: hidden; }
   .scrub-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .scroll-progress {
@@ -529,12 +529,7 @@ const HERO_VIDEO_FALLBACK = "https://cdn.pixabay.com/video/2024/02/12/200078-913
 
 function Hero() {
   const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-  const spacerRef = useRef(null);
-  const framesRef = useRef([]); // ImageBitmap[]
-  const [progress, setProgress] = useState(0);
-  const [framesLoaded, setFramesLoaded] = useState(0);
-  const [totalFrames, setTotalFrames] = useState(0);
+  const [loadPct, setLoadPct] = useState(0);
   const [ready, setReady] = useState(false);
   const [loadingHidden, setLoadingHidden] = useState(false);
 
@@ -559,122 +554,70 @@ function Hero() {
     }
   }, [loadingHidden]);
 
-  // Extract frames from video to canvas array
+  // Ambient looping hero video. Frame-accurate scroll-scrubbing needs a clip
+  // encoded with dense keyframes; this source isn't, so seeking crawled then
+  // snapped to the end on the live server. A muted autoplay loop streams and
+  // Hero video: play through once on load, then hold on the last frame. No
+  // scroll-scrubbing (the source isn't keyframe-dense enough to seek) and no
+  // loop — it streams and plays smoothly everywhere (Vercel + mobile).
   useEffect(() => {
     const v = videoRef.current;
-    const canvas = canvasRef.current;
-    if (!v || !canvas) return;
+    if (!v) return;
 
     v.muted = true;
     v.playsInline = true;
+    v.loop = false;
     v.preload = "auto";
 
-    const FPS = 24; // capture at 24fps
-    let captured = [];
-    let stopped = false;
-
-    const onMeta = async () => {
-      const dur = v.duration;
-      if (!dur || !isFinite(dur)) return;
-      const total = Math.floor(dur * FPS);
-      setTotalFrames(total);
-
-      // Match canvas to video aspect
-      canvas.width = v.videoWidth;
-      canvas.height = v.videoHeight;
-      const ctx = canvas.getContext("2d");
-
-      // Play through, capturing frames via requestVideoFrameCallback
-      v.play().catch(() => {});
-
-      const captureLoop = async () => {
-        if (stopped) return;
-        try {
-          const bitmap = await createImageBitmap(v);
-          captured.push(bitmap);
-          setFramesLoaded(captured.length);
-        } catch (e) {}
-
-        if (v.ended || captured.length >= total) {
-          v.pause();
-          framesRef.current = captured;
-          // Draw first frame
-          if (captured[0]) ctx.drawImage(captured[0], 0, 0, canvas.width, canvas.height);
-          setReady(true);
-          return;
+    const onLoaded = () => { v.playbackRate = 1.25; v.play().catch(() => {}); setReady(true); };
+    const onProgress = () => {
+      try {
+        const d = v.duration;
+        if (v.buffered.length && d && isFinite(d)) {
+          setLoadPct(Math.min(100, Math.round(v.buffered.end(v.buffered.length - 1) / d * 100)));
         }
-
-        // Use rVFC if available, else timeout
-        if (v.requestVideoFrameCallback) {
-          v.requestVideoFrameCallback(captureLoop);
-        } else {
-          setTimeout(captureLoop, 1000 / FPS);
-        }
-      };
-
-      if (v.requestVideoFrameCallback) {
-        v.requestVideoFrameCallback(captureLoop);
-      } else {
-        setTimeout(captureLoop, 1000 / FPS);
+      } catch (e) {}
+    };
+    const onError = () => {
+      const s = v.getAttribute("src") || "";
+      if (s.indexOf(HERO_VIDEO_FALLBACK) === -1) {
+        v.src = HERO_VIDEO_FALLBACK;
+        v.load();
+        v.playbackRate = 1.25;
+        v.play().catch(() => {});
       }
     };
 
-    v.addEventListener("loadedmetadata", onMeta, { once: true });
+    v.addEventListener("loadeddata", onLoaded, { once: true });
+    v.addEventListener("progress", onProgress);
+    v.addEventListener("canplaythrough", () => setLoadPct(100));
+    v.addEventListener("error", onError);
+
+    // Failsafe: never trap the user on the loader if the video is slow/blocked.
+    const failsafe = setTimeout(() => setReady(true), 6000);
+
+    v.load();
+
     return () => {
-      stopped = true;
-      v.removeEventListener("loadedmetadata", onMeta);
+      clearTimeout(failsafe);
+      v.removeEventListener("progress", onProgress);
+      v.removeEventListener("error", onError);
     };
   }, []);
-
-  // Track scroll, draw correct frame
-  useEffect(() => {
-    let raf = null;
-    const compute = () => {
-      const sp = spacerRef.current;
-      const canvas = canvasRef.current;
-      if (sp) {
-        const rect = sp.getBoundingClientRect();
-        const total = sp.offsetHeight - window.innerHeight;
-        const scrolled = Math.max(0, Math.min(total, -rect.top));
-        const p = total > 0 ? scrolled / total : 0;
-        setProgress(p);
-
-        const frames = framesRef.current;
-        if (canvas && frames.length > 0) {
-          const idx = Math.min(frames.length - 1, Math.floor(p * frames.length));
-          const bitmap = frames[idx];
-          if (bitmap) {
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-          }
-        }
-      }
-      raf = requestAnimationFrame(compute);
-    };
-    raf = requestAnimationFrame(compute);
-    return () => {if (raf) cancelAnimationFrame(raf);};
-  }, []);
-
-  const overlayOpacity = progress < 0.05 ? 1 : progress > 0.85 ? 0 : 1 - Math.max(0, (progress - 0.6) / 0.25);
 
   return (
-    <section id="hero" className="relative">
-      <div className="scroll-progress" style={{ width: `${progress * 100}%` }} />
-
-      <div ref={spacerRef} className="scrub-spacer">
-        <div className="scrub-sticky">
+    <section id="hero" className="relative h-screen overflow-hidden">
+      <div className="absolute inset-0">
+        <div className="absolute inset-0">
           <video
             ref={videoRef}
-            src="hero-scrub.mp4"
-            className="hidden"
+            src="hero.mp4"
+            className="absolute inset-0 w-full h-full object-cover z-0"
+            style={{ background: "#0a1410" }}
+            autoPlay
             muted
             playsInline
             preload="auto" />
-          
-          <canvas
-            ref={canvasRef}
-            className="absolute inset-0 w-full h-full object-cover z-0"
-            style={{ background: "#0a1410" }} />
           
 
           {/* Loading overlay — shows while frames are extracting */}
@@ -703,7 +646,7 @@ function Hero() {
                   <div
                   className="h-full bg-white rounded-full"
                   style={{
-                    width: totalFrames > 0 ? `${framesLoaded / totalFrames * 100}%` : "0%",
+                    width: `${loadPct}%`,
                     transition: "width 0.2s ease-out"
                   }} />
                 
@@ -715,9 +658,7 @@ function Hero() {
                     Preparing the venue
                   </div>
                   <div className="text-white/40 text-[11px] font-mono tabular-nums">
-                    {totalFrames > 0 ?
-                  `${Math.round(framesLoaded / totalFrames * 100)}%` :
-                  "Initializing\u2026"}
+                    {loadPct > 0 ? `${loadPct}%` : "Initializing\u2026"}
                   </div>
                 </div>
               </div>
@@ -728,8 +669,7 @@ function Hero() {
           }} />
 
           <div
-            className="absolute inset-0 z-10 flex flex-col items-center justify-start pt-24 md:pt-32 px-5 md:px-4"
-            style={{ opacity: overlayOpacity, transition: "opacity 0.2s linear" }}>
+            className="absolute inset-0 z-10 flex flex-col items-center justify-start pt-24 md:pt-32 px-5 md:px-4">
             
         <motion.div
               initial={{ filter: "blur(10px)", opacity: 0, y: 20 }}
@@ -807,7 +747,7 @@ function Hero() {
         </motion.div>
 
             {/* Scroll cue */}
-            <div className="mt-10 flex flex-col items-center gap-2 text-white/70" style={{ opacity: progress < 0.05 ? 1 : 0, transition: "opacity 0.3s" }}>
+            <div className="mt-10 flex flex-col items-center gap-2 text-white/70">
               <div className="text-[10px] uppercase tracking-[0.3em] font-body">Scroll to begin</div>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 animate-bounce">
                 <path d="M12 5v14M5 12l7 7 7-7" strokeLinecap="round" strokeLinejoin="round" />

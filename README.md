@@ -10,7 +10,7 @@ No build step, no dependencies to install — it's a static site that runs entir
 | `index.html` | The entire site (HTML + React via in-browser Babel) |
 | `image-slot.js` | Logo placeholder web component |
 | `logo-nav.webp`, `logo-loader.webp`, `logo-footer.webp` | SCLF logos shown in the nav, loading screen, and footer |
-| `hero.mp4`, `hero-scrub.mp4` | Hero background video (scroll-scrubbed) |
+| `hero.mp4` | Hero background video (muted autoplay loop) |
 
 ## Deploy to Vercel
 
