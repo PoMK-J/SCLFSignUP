@@ -40,4 +40,4 @@ The "Pay … kr with Stripe" button opens the matching Stripe Checkout in a new 
 ## Notes
 
 - The hero video falls back to a hosted clip if `hero.mp4` is slow to load.
-- Contact email throughout the site: `info@sclf.se`.
+- Contact email throughout the site: `info@sclf.se`. 
