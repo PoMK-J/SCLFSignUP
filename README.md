@@ -24,16 +24,16 @@ That's it — there is no build step.
 
 ## Access codes (share with the client)
 
-- **Site passcode** (entry gate): `SCLF2026`
-- **Gala Dinner unlock code** (reveals the two dinner tickets): `DINNER2026`
+- **Site passcode** (entry gate): `SCLFvnxO` (case-sensitive)
+- **Gala Dinner unlock code** (reveals the two dinner tickets): `DINNERmX1a` (not case-sensitive)
 
 ## Tickets & Stripe
 
 | Pass | Price | Checkout |
 |------|-------|----------|
-| Forum Ticket | 6 000 kr | Stripe Payment Link |
-| Forum and Gala Dinner Ticket | 20 000 kr | Stripe Payment Link (code-gated) |
-| Gala Dinner Ticket | 14 000 kr | Stripe Payment Link (code-gated) |
+| Forum Ticket | €550 | Stripe Payment Link |
+| Forum and Gala Dinner Ticket | €1,800 | Stripe Payment Link (code-gated) |
+| Gala Dinner Ticket | €1,250 | Stripe Payment Link (code-gated) |
 
 The "Pay … kr with Stripe" button opens the matching Stripe Checkout in a new tab; Stripe collects all attendee and billing details. To change a price or product, edit the link in Stripe — no code change needed unless the URL itself changes (the URLs live in the `TIERS` array near the top of the React script in `index.html`).
 

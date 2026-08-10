@@ -358,7 +358,7 @@ function PasswordGate({ onUnlock }) {
   const [val, setVal] = useState("");
   const [err, setErr] = useState(false);
   const [shake, setShake] = useState(0);
-  const PASSCODE = "SCLF2026";
+  const PASSCODE = "SCLFvnxO";
 
   const submit = (e) => {
     e.preventDefault();
@@ -846,7 +846,7 @@ const TIERS = [
   id: "forum",
   name: "Forum Ticket",
   short: "Forum",
-  price: 6000,
+  price: 550,
   stripe: "https://buy.stripe.com/aFa14n7cpfS89U75MWcjS02",
   blurb: "Full access to the three-day Forum programme — plenary, working sessions and peer roundtables.",
   perks: [
@@ -862,8 +862,7 @@ const TIERS = [
   id: "forum-gala",
   name: "Forum and Gala Dinner Ticket",
   short: "Forum + Gala",
-  price: 20000,
-  featured: true,
+  price: 1800,
   gated: true,
   stripe: "https://buy.stripe.com/5kQ9AT2W90Xeeana3ccjS01",
   blurb: "Everything in the Forum, plus a seat at the black-tie Gala Dinner at Stockholm City Hall.",
@@ -880,7 +879,7 @@ const TIERS = [
   id: "gala",
   name: "Gala Dinner Ticket",
   short: "Gala Dinner",
-  price: 14000,
+  price: 1250,
   gated: true,
   stripe: "https://buy.stripe.com/eVq5kD7cp49qeandfocjS00",
   blurb: "An evening among Nordic climate leaders — black-tie dinner only, no Forum sessions.",
@@ -975,9 +974,6 @@ function Tickets({ selected, setSelected, onContinue, dinnerUnlocked, onUnlockDi
                 
                 <div className="flex items-start justify-between">
                   <div>
-                    {t.featured && !locked &&
-                    <span className="bg-white text-black rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase mb-3 inline-block">Most Chosen</span>
-                    }
                     {locked &&
                     <span className="liquid-glass text-white/80 rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase mb-3 inline-flex items-center gap-1.5"><LockIcon className="h-3 w-3" /> Code required</span>
                     }
@@ -996,7 +992,7 @@ function Tickets({ selected, setSelected, onContinue, dinnerUnlocked, onUnlockDi
                 <p className="mt-4 text-sm text-white/85 font-body font-light leading-snug">{t.blurb}</p>
 
                 <div className="mt-6 mb-6 flex items-baseline gap-2">
-                  <span className="font-heading italic text-white text-5xl tracking-[-1.5px]">{t.price.toLocaleString("sv-SE")} kr</span>
+                  <span className="font-heading italic text-white text-5xl tracking-[-1.5px]">€{t.price.toLocaleString("en-IE")}</span>
                   <span className="text-xs text-white/60 font-body">incl. VAT</span>
                 </div>
 
@@ -1104,14 +1100,11 @@ function Payment({ selected, setSelected, dinnerUnlocked }) {
 
             <div className="flex items-start justify-between gap-4">
               <div>
-                {tier.featured &&
-                <span className="bg-white text-black rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase mb-3 inline-block">Most Chosen</span>
-                }
                 <h3 className="font-heading italic text-white text-3xl sm:text-4xl md:text-5xl tracking-[-1.5px] leading-none">{tier.name}</h3>
                 <p className="mt-4 text-sm text-white/80 font-body font-light leading-snug max-w-md">{tier.blurb}</p>
               </div>
               <div className="text-right shrink-0">
-                <div className="font-heading italic text-white text-3xl sm:text-4xl md:text-5xl tracking-[-1.5px] leading-none whitespace-nowrap">{tier.price.toLocaleString("sv-SE")} kr</div>
+                <div className="font-heading italic text-white text-3xl sm:text-4xl md:text-5xl tracking-[-1.5px] leading-none whitespace-nowrap">€{tier.price.toLocaleString("en-IE")}</div>
                 <div className="text-[11px] text-white/55 font-body mt-2">incl. VAT</div>
               </div>
             </div>
@@ -1136,7 +1129,7 @@ function Payment({ selected, setSelected, dinnerUnlocked }) {
               className="mt-8 bg-white text-black rounded-full w-full px-7 py-4 text-sm font-medium font-body inline-flex items-center justify-center gap-2 hover:bg-white/90 transition-colors">
               
               <LockIcon className="h-4 w-4" />
-              Pay {tier.price.toLocaleString("sv-SE")} kr with Stripe
+              Pay €{tier.price.toLocaleString("en-IE")} with Stripe
               <ArrowUpRight className="h-5 w-5" />
             </button>
 
@@ -1172,7 +1165,7 @@ function Payment({ selected, setSelected, dinnerUnlocked }) {
                       <div className="text-[11px] text-white/55 font-body mt-0.5">{locked ? "Locked · code required" : "SCLF 2026 · 3 October"}</div>
                     </div>
                   </div>
-                  <div className="text-sm font-body font-medium text-white whitespace-nowrap pl-3">{t.price.toLocaleString("sv-SE")} kr</div>
+                  <div className="text-sm font-body font-medium text-white whitespace-nowrap pl-3">€{t.price.toLocaleString("en-IE")}</div>
                 </button>);
               })}
             </div>
@@ -1253,7 +1246,7 @@ function Confirmation({ form, tier }) {
 }
 
 // ----- App -----
-const DINNER_CODE = "DINNER2026";
+const DINNER_CODE = "DINNERMX1A";
 
 function App() {
   const [unlocked, setUnlocked] = useState(false);
