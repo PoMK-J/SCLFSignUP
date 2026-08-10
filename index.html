@@ -847,7 +847,7 @@ const TIERS = [
   name: "Forum Ticket",
   short: "Forum",
   price: 550,
-  stripe: "https://buy.stripe.com/aFa14n7cpfS89U75MWcjS02",
+  stripe: "https://buy.stripe.com/eVq5kD2W949qc2f2AKcjS04",
   blurb: "Full access to the three-day Forum programme — plenary, working sessions and peer roundtables.",
   perks: [
   "Three-day Forum programme",
@@ -881,7 +881,7 @@ const TIERS = [
   short: "Gala Dinner",
   price: 1250,
   gated: true,
-  stripe: "https://buy.stripe.com/eVq5kD7cp49qeandfocjS00",
+  stripe: "https://buy.stripe.com/aFa14n7cpfS89U75MWcjS02",
   blurb: "An evening among Nordic climate leaders — black-tie dinner only, no Forum sessions.",
   perks: [
   "Black-tie Gala Dinner at Stockholm City Hall",
@@ -1129,7 +1129,7 @@ function Payment({ selected, setSelected, dinnerUnlocked }) {
               className="mt-8 bg-white text-black rounded-full w-full px-7 py-4 text-sm font-medium font-body inline-flex items-center justify-center gap-2 hover:bg-white/90 transition-colors">
               
               <LockIcon className="h-4 w-4" />
-              Pay €{tier.price.toLocaleString("en-IE")} with Stripe
+              <span>Pay €{tier.price.toLocaleString("en-IE")} with Stripe</span>
               <ArrowUpRight className="h-5 w-5" />
             </button>
 
@@ -1162,7 +1162,7 @@ function Payment({ selected, setSelected, dinnerUnlocked }) {
                     }
                     <div className="min-w-0">
                       <div className="font-heading italic text-white text-lg leading-tight truncate">{t.short || t.name}</div>
-                      <div className="text-[11px] text-white/55 font-body mt-0.5">{locked ? "Locked · code required" : "SCLF 2026 · 3 October"}</div>
+                      <div className="text-[11px] text-white/55 font-body mt-0.5 whitespace-nowrap">{locked ? "Locked · code required" : "SCLF 2026 · 3 October"}</div>
                     </div>
                   </div>
                   <div className="text-sm font-body font-medium text-white whitespace-nowrap pl-3">€{t.price.toLocaleString("en-IE")}</div>
