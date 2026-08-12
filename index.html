@@ -230,6 +230,9 @@ function FadingVideo({ src, className, style }) {
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
+    v.muted = true;
+    v.defaultMuted = true;
+    v.volume = 0;
     v.style.opacity = "0";
 
     const fadeTo = (target, duration = FADE_MS) => {
@@ -461,7 +464,7 @@ function PasswordGate({ onUnlock }) {
           transition={{ duration: 1.0, delay: 0.9, ease: "easeOut" }}
           className="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-3">
           
-          <div className="text-[11px] uppercase tracking-[0.25em] text-white/50 font-body">Stockholm · 3 October 2026</div>
+          <div className="text-[11px] uppercase tracking-[0.25em] text-white/50 font-body">Stockholm · 7 October 2026</div>
         </motion.div>
       </div>
     </motion.div>);
@@ -565,6 +568,8 @@ function Hero() {
     if (!v) return;
 
     v.muted = true;
+    v.defaultMuted = true;
+    v.volume = 0;
     v.playsInline = true;
     v.loop = false;
     v.preload = "auto";
@@ -678,7 +683,7 @@ function Hero() {
               className="liquid-glass rounded-full px-1 py-1 inline-flex items-center gap-2 max-w-full">
               
           <span className="bg-white text-black rounded-full px-3 py-1 text-xs font-semibold shrink-0">2026</span>
-          <span className="text-[11px] sm:text-sm text-white/90 pr-3 font-body">Fourth Annual Forum · 3 October · Stockholm</span>
+          <span className="text-[11px] sm:text-sm text-white/90 pr-3 font-body">Fourth Annual Forum · 7 October · Stockholm</span>
         </motion.div>
 
         <div className="mt-6 max-w-3xl">
@@ -720,7 +725,7 @@ function Hero() {
               
           {[
               { num: "180+", label: "Curated Leaders Across Sectors", icon: "people" },
-              { num: "3 Days", label: "Of Candid, Off-the-Record Dialogue", icon: "planet" }].
+              { num: "1 Day", label: "Of Candid, Off-the-Record Dialogue", icon: "planet" }].
               map((s, i) =>
               <div key={i} className="liquid-glass p-5 w-[160px] sm:w-[240px] rounded-[1.25rem]">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-7 h-7 text-white">
@@ -848,14 +853,13 @@ const TIERS = [
   short: "Forum",
   price: 550,
   stripe: "https://buy.stripe.com/eVq5kD2W949qc2f2AKcjS04",
-  blurb: "Full access to the three-day Forum programme — plenary, working sessions and peer roundtables.",
+  blurb: "Full access to the one-day Forum programme — high-end networking and more.",
   perks: [
-  "Three-day Forum programme",
-  "Closed-door working sessions",
-  "Curated peer roundtables",
-  "Catered Nordic lunches & breaks",
-  "Networking reception",
-  "Forum digest & post-event materials"]
+  "One-day Forum programme",
+  "Coffee, tea, and premium snacks",
+  "High-end networking",
+  "Live Concert",
+  "Champagne Reception"]
 
 },
 {
@@ -865,14 +869,11 @@ const TIERS = [
   price: 1800,
   gated: true,
   stripe: "https://buy.stripe.com/5kQ9AT2W90Xeeana3ccjS01",
-  blurb: "Everything in the Forum, plus a seat at the black-tie Gala Dinner at Stockholm City Hall.",
+  blurb: "Everything in the Forum, plus a seat at the black-tie Gala Dinner at Private Castle.",
   perks: [
   "All Forum Ticket benefits",
-  "Black-tie Gala Dinner at Stockholm City Hall",
-  "Three-course Nordic tasting menu",
-  "After-dinner keynote & programme",
-  "Speaker introductions",
-  "Reserved seating"]
+  "Black-tie Gala Dinner at Private Castle",
+  "Three-course Fine Dining Menu"]
 
 },
 {
@@ -882,13 +883,10 @@ const TIERS = [
   price: 1250,
   gated: true,
   stripe: "https://buy.stripe.com/aFa14n7cpfS89U75MWcjS02",
-  blurb: "An evening among Nordic climate leaders — black-tie dinner only, no Forum sessions.",
+  blurb: "A formal gala dinner celebrating leadership, innovation, and collaboration.",
   perks: [
-  "Black-tie Gala Dinner at Stockholm City Hall",
-  "Three-course Nordic tasting menu",
-  "After-dinner keynote & programme",
-  "Welcome champagne reception",
-  "Reserved seating"]
+  "Black-tie Gala Dinner at Private Castle",
+  "Three-course Fine Dining Menu"]
 
 }];
 
@@ -974,8 +972,10 @@ function Tickets({ selected, setSelected, onContinue, dinnerUnlocked, onUnlockDi
                 
                 <div className="flex items-start justify-between">
                   <div>
-                    {locked &&
-                    <span className="liquid-glass text-white/80 rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase mb-3 inline-flex items-center gap-1.5"><LockIcon className="h-3 w-3" /> Code required</span>
+                    {!dinnerUnlocked &&
+                    <span className={`liquid-glass rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase mb-3 inline-flex items-center gap-1.5 ${locked ? "text-white/80" : "text-white/50"}`}>
+                      {locked ? <><LockIcon className="h-3 w-3" /> Code required</> : <>Code not required</>}
+                    </span>
                     }
                     <h3 className="font-heading italic text-white text-4xl md:text-5xl tracking-[-1.5px] leading-none">{t.name}</h3>
                   </div>
@@ -1162,7 +1162,7 @@ function Payment({ selected, setSelected, dinnerUnlocked }) {
                     }
                     <div className="min-w-0">
                       <div className="font-heading italic text-white text-lg leading-tight truncate">{t.short || t.name}</div>
-                      <div className="text-[11px] text-white/55 font-body mt-0.5 whitespace-nowrap">{locked ? "Locked · code required" : "SCLF 2026 · 3 October"}</div>
+                      <div className="text-[11px] text-white/55 font-body mt-0.5 whitespace-nowrap">{locked ? "Locked · code required" : "SCLF 2026 · 7 October"}</div>
                     </div>
                   </div>
                   <div className="text-sm font-body font-medium text-white whitespace-nowrap pl-3">€{t.price.toLocaleString("en-IE")}</div>
@@ -1231,8 +1231,8 @@ function Confirmation({ form, tier }) {
           
           {[
           { k: "Pass", v: tier.name },
-          { k: "Dates", v: "3 October 2026" },
-          { k: "Venue", v: "Stockholm City Hall" }].
+          { k: "Date", v: "7 October 2026" },
+          { k: "Venue", v: "Private Castle" }].
           map((it) =>
           <div key={it.k} className="liquid-glass rounded-[1.25rem] p-5">
               <div className="text-[11px] uppercase tracking-[0.2em] text-white/55 font-body">{it.k}</div>
