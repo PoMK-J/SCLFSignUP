@@ -31,9 +31,9 @@ That's it — there is no build step.
 
 | Pass | Price | Checkout |
 |------|-------|----------|
-| Forum Ticket | €550 | Stripe Payment Link |
-| Forum and Gala Dinner Ticket | €1,800 | Stripe Payment Link (code-gated) |
-| Gala Dinner Ticket | €1,250 | Stripe Payment Link (code-gated) |
+| Forum Ticket | €450 | Stripe Payment Link |
+| Forum and Gala Dinner Ticket | €1,500 | Stripe Payment Link (code-gated) |
+| Gala Dinner Ticket | €1,200 | Stripe Payment Link (code-gated) |
 
 The "Pay … kr with Stripe" button opens the matching Stripe Checkout in a new tab; Stripe collects all attendee and billing details. To change a price or product, edit the link in Stripe — no code change needed unless the URL itself changes (the URLs live in the `TIERS` array near the top of the React script in `index.html`).
 
