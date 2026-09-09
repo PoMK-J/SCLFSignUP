@@ -24,7 +24,7 @@ That's it — there is no build step.
 
 ## Access codes (share with the client)
 
-- **Site passcode** (entry gate): `SCLFvnxO` (case-sensitive)
+- **Site entry:** open — no passcode needed
 - **Gala Dinner unlock code** (reveals the two dinner tickets): `DINNERmX1a` (not case-sensitive)
 
 ## Tickets & Stripe
